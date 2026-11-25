@@ -3,22 +3,18 @@
 **Group:** River Roseveare-Hunt, Priya Venugopal Nair, Varuna Vyomessh, Sanjana Phalke  
 **Institution:** San Jose State University
 
-## What the grader receives
+## Grading delivery
 
-1. **Canvas:** IEEE write-up PDF (`submission/HW32_River_Roseveare-Hunt.pdf`)
-2. **This repository:** implementation code, SQL, dbt, Airflow DAGs, sample data, and evidence dumps
+1. **Canvas:** `submission/HW32_River_Roseveare-Hunt.pdf`
+2. **Code:** https://github.com/DogmaHG/DATA226-HW3-FALL26
 
-Repo URL: https://github.com/DogmaHG/DATA226-HW3-FALL26
-
-## Contents
+## Local layout
 
 | Path | Description |
 |------|-------------|
-| `submission/` | PDF submitted on Canvas |
-| `3.2/` | HW 3.2 product-catalog pipeline (Airflow + Snowflake + dbt SCD Type 2 + clones) |
-| `3.2/report/evidence/` | SCD / Airflow / clone query outputs |
-| `3.2/llm-use-log.md` | Mandatory generative-AI disclosure |
+| `submission/` | PDF for Canvas |
+| `3.2/` | Pipeline (Airflow, dbt, SQL, scripts, data, evidence) |
 
-See `3.2/README.md` for how to run the pipeline.
+Local-only (not on GitHub): `3.2/.venv/`, `3.2/.env`.
 
-Secrets (`.env`, PATs) are not committed.
+See `3.2/README.md` to run the pipeline.
