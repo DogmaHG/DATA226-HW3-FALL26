@@ -1,0 +1,14 @@
+product_catalog_etl run @ 2026-11-25T18:52:57.756944+00:00
+
+== extract_products ==
+extract_products: SUCCESS
+
+== load_products ==
+load_products: SUCCESS
+
+== dbt_build ==
+dbt_build: SUCCESS
+
+== verify_row_counts ==
+raw.products=3000 dim_product=3025
+verify_row_counts: SUCCESS

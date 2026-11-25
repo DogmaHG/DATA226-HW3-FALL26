@@ -1,0 +1,2 @@
+PIT clone timestamp: 2026-11-25 10:51:45 -0800
+(after first successful dim_product build, before SCD mutate)

@@ -1,0 +1,4 @@
+extract_products >> load_products >> dbt_build >> verify_row_counts
+DAG id: product_catalog_etl
+schedule: @daily; retries=1
+Errors: missing/empty CSV fails extract; dbt fails on test errors; verify fails if raw or dim_product is empty.

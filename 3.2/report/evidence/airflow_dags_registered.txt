@@ -1,0 +1,20 @@
+Airflow home: /Users/rrosevearehunt/Education/DATA226/HW 3/3.2/airflow/home
+DAGs registered:
+product_catalog_clones | /Users/rrosevearehunt/Education/DA | river  | True     
+product_catalog_etl    | /Users/rrosevearehunt/Education/DA | river  | True     
+
+ETL tasks:
+dbt_build
+extract_products
+load_products
+verify_row_counts
+
+Clone tasks:
+clone_dev_database
+clone_point_in_time
+create_prototype_schema
+drop_prototype_schema
+manage_backups
+restore_latest_backup
+run_dbt_against_dev
+run_prototype_dbt

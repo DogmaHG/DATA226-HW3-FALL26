@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+dbt/product_catalog/logs/
+dbt/product_catalog/target/
+dbt/product_catalog/dbt_packages/
+airflow/home/
+airflow/logs/
+airflow/airflow.db
+airflow/airflow.cfg
+*.log
+.DS_Store
+report/evidence/*.png
+!report/evidence/.gitkeep
+.user.yml

@@ -1,0 +1,4 @@
+Account Time Travel retention
+key	value	default	level	description	type
+DATA_RETENTION_TIME_IN_DAYS	1	1		number of days to retain the old version of deleted/updated data	NUMBER
+(1 rows)

@@ -1,0 +1,5 @@
+Backup restore row counts
+DB	N
+prod	3025
+restored	3025
+(2 rows)

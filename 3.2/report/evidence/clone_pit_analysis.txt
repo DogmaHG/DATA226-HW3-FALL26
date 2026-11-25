@@ -1,0 +1,5 @@
+Current product counts live vs PIT
+METRIC	N
+live_current	3000
+pit_current	3000
+(2 rows)

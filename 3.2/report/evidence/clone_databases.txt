@@ -1,0 +1,7 @@
+SHOW DATABASES LIKE product_catalog%
+created_on	name	is_default	is_current	origin	owner	comment	options	retention_time	kind	owner_role_type	object_visibility	data_quality_monitoring_settings	resharing_settings
+2026-11-25 10:48:38.709000-08:00	PRODUCT_CATALOG	N	N		ACCOUNTADMIN			1	STANDARD	ROLE			
+2026-11-25 10:55:36.476000-08:00	PRODUCT_CATALOG_BACKUP_20261125	N	N		ACCOUNTADMIN			1	STANDARD	ROLE			
+2026-11-25 10:55:20.273000-08:00	PRODUCT_CATALOG_PIT	N	N		ACCOUNTADMIN			1	STANDARD	ROLE			
+2026-11-25 10:55:42.879000-08:00	PRODUCT_CATALOG_RESTORED	N	Y		ACCOUNTADMIN			1	STANDARD	ROLE			
+(4 rows)

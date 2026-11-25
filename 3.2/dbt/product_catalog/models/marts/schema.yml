@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: SCD Type 2 product dimension built from the dbt snapshot
+    columns:
+      - name: product_sk
+        description: Surrogate key from product_id + valid_from
+        tests:
+          - unique
+          - not_null
+      - name: product_id
+        tests:
+          - not_null
+      - name: valid_from
+        tests:
+          - not_null
+      - name: is_current
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+              quote: false

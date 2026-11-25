@@ -1,0 +1,13 @@
+Prototype schema dim_product_rated
+PRODUCT_ID	PRICE_BAND	PRODUCT_RATING
+HD-00006	premium	2.4
+HD-00024	mid	2.1
+HD-00005	premium	2.2
+HD-00002	budget	2.2
+HD-00025	premium	2.3
+HD-00016	premium	1.9
+HD-00009	premium	2.1
+HD-00001	premium	2.1
+HD-00008	mid	1.9
+HD-00012	premium	2.2
+(10 rows)

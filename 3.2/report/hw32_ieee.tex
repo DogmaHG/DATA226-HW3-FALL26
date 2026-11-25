@@ -1,0 +1,214 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{enumitem}
+
+\begin{document}
+
+\title{DATA226 Homework 3.2: Product Catalog Pipeline with\\
+Snowflake, dbt SCD Type~2, and Airflow}
+
+\author{\IEEEauthorblockN{River Roseveare-Hunt}
+\IEEEauthorblockA{\textit{DATA226 --- Data Engineering}\\
+Santa Clara University\\
+Email: riverhunt1022@gmail.com}
+}
+
+\maketitle
+
+\begin{abstract}
+This report documents an e-commerce product catalog pipeline:
+local CSV extract, Snowflake staging load, dbt staging and timestamp
+snapshot with an SCD Type~2 dimension, Airflow orchestration, and four
+zero-copy clone demos. A 3{,}000-row catalog was loaded twice; after
+mutating 25 products, \texttt{dim\_product} held 3{,}025 rows
+(3{,}000 current). Implementation code, evidence dumps, and run scripts
+are in the GitHub repository linked below; this PDF is the graded write-up.
+\end{abstract}
+
+\begin{IEEEkeywords}
+Snowflake, dbt, Airflow, SCD Type 2, zero-copy clone, Time Travel
+\end{IEEEkeywords}
+
+\section{How this submission is organized}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item \textbf{This PDF} --- write-up, results, takeaways, AI disclosure.
+  \item \textbf{Code repository} ---
+        \url{https://github.com/DogmaHG/DATA226-HW3-FALL26}
+        (directory \texttt{3.2/}: Airflow DAGs, dbt project, SQL, scripts,
+        data sample, and \texttt{report/evidence/}).
+\end{itemize}
+
+\section{Mandatory AI disclosure}
+\textit{Q1.} Was Generative AI or another external source used?
+\textbf{Yes}---limited Cursor use for debugging.
+
+\textit{Q2.} Details (also \texttt{3.2/llm-use-log.md} in the repo):
+\begin{itemize}[leftmargin=*,itemsep=0pt]
+  \item Cursor: Google SSO connector failure; switched to a programmatic
+        access token as the Snowflake password; network-policy bypass.
+  \item Cursor: Fixed dbt schema doubling (\texttt{analytics\_analytics})
+        and a Time Travel timezone mismatch on the point-in-time clone.
+  \item Course \texttt{Description.md}: starter snippets for DAG shape.
+\end{itemize}
+No third party wrote or ran the pipeline. Credentials stay in local
+\texttt{.env} (gitignored; not in the repo).
+
+\section{Environment and source data}
+Python 3.10 venv with Apache Airflow~2.10, dbt-core, dbt-snowflake, and
+\texttt{snowflake-connector-python}. Snowflake trial account authenticated
+with a programmatic access token (Google SSO UI login is not usable from
+the connector via \texttt{externalbrowser}).
+
+Source: local \texttt{3.2/data/products.csv} (3{,}000 products; archive
+\texttt{products\_v1.csv}). Natural key \texttt{product\_id}
+(\texttt{HD-00001}--\texttt{HD-03000}). Columns:
+\texttt{name}, \texttt{category}, \texttt{price}, \texttt{description},
+\texttt{updated\_at}. Notes in \texttt{3.2/data/SOURCE.md}.
+
+\section{Snowflake setup}
+DDL: \texttt{3.2/sql/01\_setup.sql} (also
+\texttt{3.2/scripts/setup\_snowflake.py}):
+database \texttt{product\_catalog}; schemas \texttt{raw},
+\texttt{analytics}, \texttt{snapshots}; CSV format; internal stage;
+table \texttt{raw.products}.
+Acceptance SQL: \texttt{02\_acceptance.sql}. Clone sketch:
+\texttt{03\_clones.sql}.
+
+Account Time Travel retention on this trial is \textbf{1 day}. A clone at
+\texttt{2023-12-31} is out of range
+(\texttt{3.2/report/evidence/time\_travel\_retention.txt}).
+
+\section{Airflow}
+\subsection{ETL DAG}
+\texttt{3.2/airflow/dags/product\_catalog\_etl.py}:
+\texttt{extract\_products} $\gg$ \texttt{load\_products} $\gg$
+\texttt{dbt\_build} $\gg$ \texttt{verify\_row\_counts}
+(\texttt{@daily}, one retry).
+Extract fails on missing/empty CSV
+(\texttt{3.2/scripts/load\_products.py}).
+\texttt{dbt\_build} runs \texttt{dbt build} via BashOperator.
+Verify fails if raw or dim is empty.
+CLI twin: \texttt{3.2/scripts/run\_airflow\_tasks.py}.
+
+\subsection{Clone DAG}
+\texttt{3.2/airflow/dags/product\_catalog\_clones.py}
+(\texttt{schedule=None}):
+dev clone + rated model, point-in-time clone, prototype schema,
+backup/restore. Separate from daily ETL so
+\texttt{CREATE OR REPLACE DATABASE \ldots\ CLONE} cannot wipe a sandbox.
+
+\section{dbt}
+Under \texttt{3.2/dbt/product\_catalog/}:
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item \texttt{models/staging/stg\_products.sql}
+  \item \texttt{snapshots/product\_snapshot.sql}
+        (timestamp strategy on \texttt{updated\_at})
+  \item \texttt{models/marts/dim\_product.sql} (SCD Type~2)
+  \item tests in \texttt{models/marts/schema.yml} and
+        \texttt{tests/assert\_*.sql}
+  \item \texttt{models/prototype/dim\_product\_rated.sql}
+\end{itemize}
+Driver: \texttt{3.2/scripts/run\_pipeline.sh}.
+Clones: \texttt{3.2/scripts/run\_clones.py}.
+
+\section{End-to-end SCD results}
+After first load + \texttt{dbt build},
+\texttt{3.2/scripts/mutate\_products.py} changed 25 products
+(price $+10\%$, category ``Sale'', advanced \texttt{updated\_at}).
+Reload and rebuild produced Table~\ref{tab:counts}.
+
+\begin{table}[htbp]
+\caption{Row counts after the second pipeline run}
+\label{tab:counts}
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+Relation & Rows \\
+\midrule
+\texttt{raw.products} & 3{,}000 \\
+\texttt{dim\_product} (all versions) & 3{,}025 \\
+\texttt{dim\_product} where \texttt{is\_current} & 3{,}000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Changed ids have two versions; control \texttt{HD-01000} has one.
+Full dump: \texttt{3.2/report/evidence/scd\_acceptance.txt}.
+
+ETL twin log (\texttt{airflow\_etl\_run\_log.txt}):
+extract, load, \texttt{dbt\_build}, verify SUCCESS
+(\texttt{raw=3000}, \texttt{dim\_product=3025}).
+
+\section{Zero-copy cloning}
+Via \texttt{product\_catalog\_clones.py} /
+\texttt{run\_clones.py}; evidence under
+\texttt{3.2/report/evidence/}.
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item \textbf{Dev clone} + \texttt{dim\_product\_rated}
+        (\texttt{clone\_dev\_rated.txt}).
+  \item \textbf{Point-in-time} after first dim build, before SCD mutate
+        (\texttt{clone\_pit\_timestamp.txt}).
+        Live \texttt{HD-00001}: two versions; PIT: one
+        (Table~\ref{tab:pit}; \texttt{clone\_point\_in\_time.txt}).
+  \item \textbf{Prototype schema} then drop
+        (\texttt{clone\_prototype.txt}).
+  \item \textbf{Backup/restore}: prod and restored both 3{,}025 rows
+        (\texttt{clone\_backup\_restore.txt}).
+\end{enumerate}
+
+\begin{table}[htbp]
+\caption{Live vs point-in-time for product \texttt{HD-00001}}
+\label{tab:pit}
+\centering
+\footnotesize
+\begin{tabular}{@{}llllll@{}}
+\toprule
+Src & Price & Category & Valid from & Valid to & Curr. \\
+\midrule
+live & 321.15 & Lighting & 2026-11-01 & 2026-11-25 & F \\
+live & 353.26 & Lighting Sale & 2026-11-25 & --- & T \\
+pit & 321.15 & Lighting & 2026-11-01 & --- & T \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Five takeaways}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item Clones share storage until objects diverge; a rated model built
+        only in the clone left production unchanged.
+  \item Trial Time Travel is one day---use a recent timestamp, not
+        2023-12-31.
+  \item Timestamp snapshots need \texttt{updated\_at} to advance.
+  \item dbt fails on test errors; Airflow extract/verify fail early on
+        bad inputs.
+  \item Daily \texttt{CREATE OR REPLACE DATABASE \ldots\ CLONE} would wipe
+        sandboxes, so clones use a separate DAG.
+\end{enumerate}
+See also \texttt{3.2/report/takeaways.md}.
+
+\section{Extension}
+Add a sales fact storing \texttt{product\_sk} and join to
+\texttt{dim\_product} for as-of-sale attributes. Run \texttt{dbt build}
+against a fresh clone in CI before promoting to production.
+
+\section{Conclusion}
+The pipeline meets HW~3.2: Snowflake staging, snapshot SCD Type~2,
+Airflow with error handling, clone demos, and recorded evidence.
+Use this PDF for the narrative and the GitHub repo for all code paths.
+
+\begin{thebibliography}{00}
+\bibitem{dbt} dbt Labs, ``dbt snapshots,'' documentation.
+\bibitem{sfclone} Snowflake, ``Cloning considerations,'' documentation.
+\bibitem{airflow} Apache Software Foundation, ``Airflow operators,'' documentation.
+\end{thebibliography}
+
+\end{document}

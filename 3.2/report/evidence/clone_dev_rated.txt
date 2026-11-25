@@ -1,0 +1,13 @@
+Dev clone + dim_product_rated sample
+PRODUCT_ID	NAME	PRODUCT_RATING	PRICE_BAND
+HD-00006	Commercial Electric Breaker 1006	2.4	premium
+HD-00024	Glacier Bay Wrench 1024	2.1	mid
+HD-00005	Everbilt Garden Hose 1005	2.2	premium
+HD-00002	Defiant Shutoff Valve 1002	2.2	budget
+HD-00025	Home Decorators LED Bulb 1025	2.3	premium
+HD-00016	Defiant Saw 1016	1.9	premium
+HD-00009	Defiant Desk Lamp 1009	2.1	premium
+HD-00001	Husky Ceiling Fan 1001	2.1	premium
+HD-00008	Husky Drill 1008	1.9	mid
+HD-00012	Everbilt Carpet Tile 1012	2.2	premium
+(10 rows)

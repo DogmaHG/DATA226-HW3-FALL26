@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: raw
+    database: product_catalog
+    schema: raw
+    tables:
+      - name: products
+        description: Current-state product catalog loaded from CSV via Airflow/COPY
+        columns:
+          - name: product_id
+            description: Natural product key
+          - name: name
+          - name: category
+          - name: price
+          - name: description
+          - name: updated_at
+            description: Source change timestamp used by the dbt snapshot

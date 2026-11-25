@@ -1,0 +1,27 @@
+name: product_catalog
+version: 1.0.0
+config-version: 2
+profile: product_catalog
+
+model-paths: ["models"]
+snapshot-paths: ["snapshots"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+seed-paths: ["seeds"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  product_catalog:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
+    prototype:
+      +materialized: table
+      +enabled: true
+
+snapshots:
+  product_catalog:
+    +target_schema: snapshots
