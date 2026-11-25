@@ -13,4 +13,3 @@ airflow/airflow.cfg
 .DS_Store
 report/evidence/*.png
 !report/evidence/.gitkeep
-.user.yml

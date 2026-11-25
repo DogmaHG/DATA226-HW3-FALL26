@@ -1,11 +1,12 @@
 # DATA226 Homework 3 (Fall 2026)
 
-**Author:** River Roseveare-Hunt
+**Group:** River Roseveare-Hunt, Priya Venugopal Nair, Varuna Vyomessh, Sanjana Phalke  
+**Institution:** San Jose State University
 
 ## What the grader receives
 
 1. **Canvas:** IEEE write-up PDF (`submission/HW32_River_Roseveare-Hunt.pdf`)
-2. **This repository:** all implementation code, SQL, dbt, Airflow DAGs, sample data, and evidence dumps
+2. **This repository:** implementation code, SQL, dbt, Airflow DAGs, sample data, and evidence dumps
 
 Repo URL: https://github.com/DogmaHG/DATA226-HW3-FALL26
 

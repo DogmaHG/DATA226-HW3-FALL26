@@ -1,5 +1,8 @@
 # HW 3.2 — E-commerce Product Catalog
 
+**Group:** River Roseveare-Hunt, Priya Venugopal Nair, Varuna Vyomessh, Sanjana Phalke  
+**Institution:** San Jose State University (DATA226)
+
 Local CSV → Airflow → Snowflake staging → dbt snapshot (SCD Type 2) → zero-copy clones.
 
 **Grading delivery:** Canvas gets the IEEE PDF write-up; this repository holds the code and evidence.
